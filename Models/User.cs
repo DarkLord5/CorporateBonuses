@@ -13,7 +13,5 @@ namespace CorporateBonuses.Models
         [Required]
         public string Surname { get; set; }
         public int Rang { get; set; }
-
-
     }
 }

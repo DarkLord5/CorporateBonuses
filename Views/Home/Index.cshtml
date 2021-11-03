@@ -1,4 +1,5 @@
-﻿@{
+﻿@model CorporateBonuses.Models.User
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -7,15 +8,29 @@
 {
     <p>Здравствуй, @User.Identity.Name</p>
 
+
+    <br />
+    @if (User.IsInRole("admin"))
+    {
+        <form asp-controller="Bonuses" asp-action="Index">
+            <input type="submit" value="Управление бонусами" />
+        </form>
+        <br />
+        <form asp-controller="BonRequests" asp-action="Index">
+            <input type="submit" value="Запросы от смертных" />
+        </form>
+    }
+    else
+    {
+        <form method="get" asp-controller="Bonuses" asp-action="UserList">
+            <input type="submit" value="Посмотреть доступные бонусы" />
+        </form>
+        <br />
+    }
+    <br />
     <form method="post" asp-controller="Account" asp-action="Logout">
         <input type="submit" value="Выход" />
     </form>
-    @if (User.IsInRole("admin"))
-     {
-        <form method="post" asp-controller="Bonuses" asp-action="Index">
-        <input type="submit" value="Управление бонусами" />
-        </form>
-     }
 }
 else
 {

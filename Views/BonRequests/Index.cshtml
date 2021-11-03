@@ -1,0 +1,54 @@
+﻿@model List<CorporateBonuses.ViewModels.RequestsViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Bonus
+            </th>
+            <th>
+                Employee
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Date of Request
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Requests.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bonuses.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Users.FirstName) @Html.DisplayFor(modelItem => item.Users.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bonuses.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Requests.ApproveDate)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Requests.Id">Edit</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

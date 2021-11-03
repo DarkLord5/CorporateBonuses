@@ -6,18 +6,49 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CorporateBonuses.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace CorporateBonuses.Controllers
 {
     public class BonusesController : Controller
     {
         private readonly ApplicationContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public BonusesController(ApplicationContext context)
+        public BonusesController(ApplicationContext context, UserManager<User> userManager )
         {
             _context = context;
+            _userManager = userManager;
         }
 
+        
+
+        public async Task<IActionResult> UserList()
+        {
+            string u = User.Identity.Name; //
+            User user = await _userManager.FindByNameAsync(u);
+            var bonuses = from b in _context.Bonuses select b;
+            bonuses = bonuses.Where(b => b.Rang <= user.Rang);
+            bonuses = bonuses.Where(b => b.Enabled);
+            return View(bonuses);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UserList(int Id)
+        {
+            string u = User.Identity.Name;
+            User user = await _userManager.FindByNameAsync(u);
+            Bonus bon = await _context.Bonuses.FindAsync(Id);
+            if (bon.Rang>1) {
+                BonRequest req = new() { UserId = user.Id, BonusId = Id, Status = "Pending", ApproveDate = DateTime.Today };
+                _context.Add(req);
+                await _context.SaveChangesAsync();
+            }
+            var bonuses = from b in _context.Bonuses select b;
+            bonuses = bonuses.Where(b => b.Rang <= user.Rang);
+            bonuses = bonuses.Where(b => b.Enabled);
+            return View(bonuses);
+        }
         // GET: Bonuses
         public async Task<IActionResult> Index()
         {
