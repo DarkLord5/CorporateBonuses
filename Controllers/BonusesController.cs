@@ -43,7 +43,7 @@ namespace CorporateBonuses.Controllers
             string u = User.Identity.Name;
             User user = await _userManager.FindByNameAsync(u);
             Bonus bon = await _context.Bonuses.FindAsync(Id);
-            BonRequest req = new() { UserId = user.Id, BonusId = Id,  ApproveDate = DateTime.Today };
+            BonRequest req = new() { UserId = user.Id, BonusId = Id,  ApproveDate = DateTime.Today, Price = bon.Price };
             if (bon.Rang>1) {
 
                 req.Status = "Pending";
@@ -148,6 +148,15 @@ namespace CorporateBonuses.Controllers
                         throw;
                     }
                 }
+                var requests = from b in _context.BonRequests select b;
+                requests = requests.Where(r => r.BonusId == bonus.Id);
+                var req = requests.Where(r => r.Status == "Pending").ToList();
+                foreach(var r in req)
+                {
+                    r.Price = bonus.Price;
+                    _context.Update(r);
+                }
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(bonus);

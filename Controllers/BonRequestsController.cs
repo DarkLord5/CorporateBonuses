@@ -22,29 +22,71 @@ namespace CorporateBonuses.Controllers
             _userManager = userManager;
         }
 
-        private async Task<List<RequestsViewModel>> SearchingAsync(string param)
+        
+
+        private async Task<double[]> Counter(IQueryable<BonRequest> requests)
+        {
+            double[] price = { 0, 0, 0}; 
+            var req = requests.Where(r => r.Status == "Approved").ToList();
+            foreach(var r in req)
+            {
+                price[0] += r.Price;
+            }
+            req = requests.Where(r => r.Status == "Pending").ToList();
+            foreach (var r in req)
+            {
+                price[1] += r.Price;
+            }
+            req = requests.Where(r => r.Status == "Rejected").ToList();
+            foreach (var r in req)
+            {
+                price[2] += r.Price;
+            }
+            for(int i=0; i<price.Length; i++)
+            {
+                price[i] /= 100;
+            }
+            return price;
+        }
+        private async Task<RequestsViewModel> Filter(string param)
         {
             var requests = from br in _context.BonRequests select br;
-            var req = requests.Where(r => r.Status == param).ToList();
-            List<RequestsViewModel> model = new();
+            List<BonRequest> req = requests.ToList();
+            if ((param != "All") && (param != null))
+            {
+                req = requests.Where(r => r.Status == param).ToList();
+            }
+            List<User> users = new();
+            List<Bonus> bonuses = new();
             foreach (BonRequest request in req)
             {
-                var data = new RequestsViewModel
-                {
-                    Requests = request,
-                    Users = await _userManager.FindByIdAsync(request.UserId),
-                    Bonuses = await _context.Bonuses.FindAsync(request.BonusId)
-                };
-                model.Add(data);
+                users.Add(await _userManager.FindByIdAsync(request.UserId));
+                bonuses.Add(await _context.Bonuses.FindAsync(request.BonusId));
             }
+            List<string> states = new()
+            {
+                "Pending",
+                "Rejected",
+                "Approved"
+            };
+            
+            RequestsViewModel model = new()
+            {
+                Requests = req,
+                Users = users,
+                Bonuses = bonuses,
+                States = new SelectList(states),
+                Price = await Counter(requests)
+            };
             return model;
         }
 
 
         // GET: BonRequests
-        public async Task<IActionResult> IndexAsync()
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            var model = await SearchingAsync("Pending");
+            var model = await Filter("Pending");
             return View(model);
         }
 
@@ -63,111 +105,23 @@ namespace CorporateBonuses.Controllers
                 _context.Update(r);
             }
             await _context.SaveChangesAsync();
-            var model = await SearchingAsync("Pending");
+            var model = await Filter("Pending");
             return View(model);
         }
 
-        //// GET: BonRequests/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    var bonRequest = await _context.BonRequests
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (bonRequest == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    return View(bonRequest);
-        //}
-
-        // GET: BonRequests/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        [HttpGet]
+        public async Task<IActionResult> Statistics(string State)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var bonRequest = await _context.BonRequests.FindAsync(id);
-            if (bonRequest == null)
-            {
-                return NotFound();
-            }
-            return View(bonRequest);
+            var model = await Filter(State);
+            return View(model);
         }
-
-        // POST: BonRequests/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BonusId,UserId,Status,ApproveDate")] BonRequest bonRequest)
+        public async Task<IActionResult> Statistics()
         {
-            if (id != bonRequest.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(bonRequest);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BonRequestExists(bonRequest.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(bonRequest);
-        }
-
-        // GET: BonRequests/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var bonRequest = await _context.BonRequests
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (bonRequest == null)
-            {
-                return NotFound();
-            }
-
-            return View(bonRequest);
-        }
-
-        // POST: BonRequests/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var bonRequest = await _context.BonRequests.FindAsync(id);
-            _context.BonRequests.Remove(bonRequest);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool BonRequestExists(int id)
-        {
-            return _context.BonRequests.Any(e => e.Id == id);
+            
+            return View();
         }
     }
 }

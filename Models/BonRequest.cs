@@ -16,6 +16,7 @@ namespace CorporateBonuses.Models
         [ForeignKey("User")]
         public string UserId { get; set; }
         public string Status { get; set; }
+        public int Price { get; set; }
 
         [Display(Name = "Approve Date")]
         [DataType(DataType.Date)]
