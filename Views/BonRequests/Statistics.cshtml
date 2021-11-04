@@ -6,7 +6,13 @@
 
 <h1>Statistics</h1>
 <br />
-<h3>Вы потратили @Model.Price[0] $, если принять все запросы, то затратите дополнительно @Model.Price[1] $, также вы сэкономили @Model.Price[2] $ на отказах</h3>
+<form asp-controller="BonRequests" asp-action="Statistics" method="post">
+    <p>
+        C <input asp-for="Start" type="date" value=""/> по <input type="date" asp-for="End" value="" />
+        <input type="submit" value="Статистика за промежуток времени" />
+    </p>
+</form>
+<h3>Вы потратили @Model.Price[0] $, если одобрите все запросы, то затратите дополнительно @Model.Price[1] $, также вы сэкономили @Model.Price[2] $ на отказах</h3>
 <br />
 <form asp-controller="BonRequests" asp-action="Statistics" method="get">
     <p>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CorporateBonuses.ViewModels;
 
 namespace CorporateBonuses.Models
 {
@@ -16,5 +17,6 @@ namespace CorporateBonuses.Models
             : base(options)
         {
         }
+        public DbSet<CorporateBonuses.ViewModels.UserViewModel> UserViewModel { get; set; }
     }
 }

@@ -22,13 +22,13 @@ namespace CorporateBonuses.Controllers
             _userManager = userManager;
         }
 
-        
 
-        private async Task<double[]> Counter(IQueryable<BonRequest> requests)
+        //вспомогательные методы
+        private double[] Counter(IQueryable<BonRequest> requests)
         {
-            double[] price = { 0, 0, 0}; 
+            double[] price = { 0, 0, 0 };
             var req = requests.Where(r => r.Status == "Approved").ToList();
-            foreach(var r in req)
+            foreach (var r in req)
             {
                 price[0] += r.Price;
             }
@@ -42,15 +42,14 @@ namespace CorporateBonuses.Controllers
             {
                 price[2] += r.Price;
             }
-            for(int i=0; i<price.Length; i++)
+            for (int i = 0; i < price.Length; i++)
             {
                 price[i] /= 100;
             }
             return price;
         }
-        private async Task<RequestsViewModel> Filter(string param)
+        private async Task<RequestsViewModel> Filter(string param, IQueryable<BonRequest> requests)
         {
-            var requests = from br in _context.BonRequests select br;
             List<BonRequest> req = requests.ToList();
             if ((param != "All") && (param != null))
             {
@@ -69,24 +68,24 @@ namespace CorporateBonuses.Controllers
                 "Rejected",
                 "Approved"
             };
-            
             RequestsViewModel model = new()
             {
                 Requests = req,
                 Users = users,
                 Bonuses = bonuses,
                 States = new SelectList(states),
-                Price = await Counter(requests)
+                Price = Counter(requests)
             };
             return model;
         }
 
 
-        // GET: BonRequests
+        // Списки для админа
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var model = await Filter("Pending");
+            var requests = from br in _context.BonRequests select br;
+            var model = await Filter("Pending", requests);
             return View(model);
         }
 
@@ -95,6 +94,7 @@ namespace CorporateBonuses.Controllers
         {
             BonRequest request = await _context.BonRequests.FindAsync(Id);
             request.Status = command;
+            request.ApproveDate = DateTime.Today;
             _context.Update(request);
             await _context.SaveChangesAsync();
 
@@ -102,26 +102,55 @@ namespace CorporateBonuses.Controllers
             var req = requests.Where(br => (br.BonusId == request.BonusId) && (br.UserId == request.UserId) && (br.Status == "Pending")).ToList();
             foreach(var r in req){
                 r.Status = "Rejected";
+                r.ApproveDate = DateTime.Today;
                 _context.Update(r);
             }
             await _context.SaveChangesAsync();
-            var model = await Filter("Pending");
+            var model = await Filter("Pending",requests);
             return View(model);
         }
 
 
-
+        //Статистика для админа
         [HttpGet]
         public async Task<IActionResult> Statistics(string State)
         {
-            var model = await Filter(State);
+            var requests = from br in _context.BonRequests select br;
+            var model = await Filter(State, requests);
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> Statistics()
+        public async Task<IActionResult> Statistics(RequestsViewModel model)
         {
-            
-            return View();
+            var requests = from br in _context.BonRequests select br;
+            requests = requests.Where(r => (r.ApproveDate >= model.Start) && (r.ApproveDate <= model.End));
+            var model2 = await Filter("All", requests);
+            return View(model2);
+        }
+
+
+        //Пользовательские методы
+        [HttpGet]
+        public async Task<IActionResult> MyRequests(string State)
+        {
+            string u = User.Identity.Name;
+            User user = await _userManager.FindByNameAsync(u);
+            var requests = from br in _context.BonRequests select br;
+            requests = requests.Where(r => r.UserId == user.Id);
+            var model = await Filter(State, requests);
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MyRequests(RequestsViewModel model)
+        {
+            string u = User.Identity.Name;
+            User user = await _userManager.FindByNameAsync(u);
+            var requests = from br in _context.BonRequests select br;
+            requests = requests.Where(r => r.UserId == user.Id);
+            requests = requests.Where(r => (r.ApproveDate >= model.Start) && (r.ApproveDate <= model.End));
+            var model2 = await Filter("All", requests);
+            return View(model2);
         }
     }
 }
