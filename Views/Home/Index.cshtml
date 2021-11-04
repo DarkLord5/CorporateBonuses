@@ -30,6 +30,10 @@
             <input type="submit" value="Посмотреть доступные бонусы" />
         </form>
         <br />
+        <form method="get" asp-controller="BonRequests" asp-action="MyRequests">
+            <input type="submit" value="Посмотреть свои запросы" />
+        </form>
+        <br />
     }
     <br />
     <form method="post" asp-controller="Account" asp-action="Logout">

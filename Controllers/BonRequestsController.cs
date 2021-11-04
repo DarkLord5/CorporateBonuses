@@ -80,6 +80,30 @@ namespace CorporateBonuses.Controllers
         }
 
 
+        private DateTime EnableDate(int expectation)
+        {
+            DateTime newDate = DateTime.Today;
+            if(expectation%30==0)
+            {
+                int month = expectation / 30;
+                newDate.AddMonths(month);
+                
+                return new DateTime(newDate.Year, newDate.Month, 1);
+            }
+            else if(expectation == 365)
+            {
+                newDate.AddYears(1);
+                return newDate;
+            }
+            else
+            {
+                newDate.AddDays(expectation);
+                return newDate;
+            }
+            
+        }
+
+
         // Списки для админа
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -97,7 +121,16 @@ namespace CorporateBonuses.Controllers
             request.ApproveDate = DateTime.Today;
             _context.Update(request);
             await _context.SaveChangesAsync();
-
+            if (command == "Approved") { 
+            Bonus bonus = await _context.Bonuses.FindAsync(request.BonusId);
+            PersonalBonus persBon = new()
+            {
+                UserId = request.UserId,
+                BonusId = Id,
+                EnableDate = EnableDate(bonus.DaysToReset)
+            };
+            _context.Add(persBon);
+            }
             var requests = from br in _context.BonRequests select br;
             var req = requests.Where(br => (br.BonusId == request.BonusId) && (br.UserId == request.UserId) && (br.Status == "Pending")).ToList();
             foreach(var r in req){

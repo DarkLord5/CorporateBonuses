@@ -21,11 +21,22 @@ namespace CorporateBonuses.Controllers
             _userManager = userManager;
         }
 
+        
+
         private IQueryable Filtration(User user)
         {
+            var persbonuses = from pb in _context.PersonalBonuses select pb;
+            var persbon = persbonuses.Where(pb => pb.UserId == user.Id).ToList();
+
             var bonuses = from b in _context.Bonuses select b;
-            bonuses = bonuses.Where(b => b.Rang <= user.Rang);
             bonuses = bonuses.Where(b => b.Enabled);
+            bonuses = bonuses.Where(b => b.Rang <= user.Rang);
+            //foreach(PersonalBonus pb in persbon)
+            //{
+            //    Bonus bonus = await _context.Bonuses.FindAsync(pb.BonusId);
+            //    bonuses = bonuses.Where(b => (b.Id == pb.BonusId)&&(DateTime.Today>=pb.EnableDate));
+            //}
+            
             return (bonuses);
         }
         
