@@ -21,16 +21,20 @@ namespace CorporateBonuses.Controllers
             _userManager = userManager;
         }
 
+        private IQueryable Filtration(User user)
+        {
+            var bonuses = from b in _context.Bonuses select b;
+            bonuses = bonuses.Where(b => b.Rang <= user.Rang);
+            bonuses = bonuses.Where(b => b.Enabled);
+            return (bonuses);
+        }
         
 
         public async Task<IActionResult> UserList()
         {
             string u = User.Identity.Name; //
             User user = await _userManager.FindByNameAsync(u);
-            var bonuses = from b in _context.Bonuses select b;
-            bonuses = bonuses.Where(b => b.Rang <= user.Rang);
-            bonuses = bonuses.Where(b => b.Enabled);
-            return View(bonuses);
+            return View(Filtration(user));
         }
 
         [HttpPost]
@@ -39,15 +43,18 @@ namespace CorporateBonuses.Controllers
             string u = User.Identity.Name;
             User user = await _userManager.FindByNameAsync(u);
             Bonus bon = await _context.Bonuses.FindAsync(Id);
+            BonRequest req = new() { UserId = user.Id, BonusId = Id,  ApproveDate = DateTime.Today };
             if (bon.Rang>1) {
-                BonRequest req = new() { UserId = user.Id, BonusId = Id, Status = "Pending", ApproveDate = DateTime.Today };
-                _context.Add(req);
-                await _context.SaveChangesAsync();
+
+                req.Status = "Pending";
             }
-            var bonuses = from b in _context.Bonuses select b;
-            bonuses = bonuses.Where(b => b.Rang <= user.Rang);
-            bonuses = bonuses.Where(b => b.Enabled);
-            return View(bonuses);
+            else
+            {
+                req.Status = "Approved";
+            }
+            _context.Add(req);
+            await _context.SaveChangesAsync();
+            return View(Filtration(user));
         }
         // GET: Bonuses
         public async Task<IActionResult> Index()

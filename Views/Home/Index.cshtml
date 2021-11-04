@@ -12,11 +12,11 @@
     <br />
     @if (User.IsInRole("admin"))
     {
-        <form asp-controller="Bonuses" asp-action="Index">
+        <form method="get" asp-controller="Bonuses" asp-action="Index">
             <input type="submit" value="Управление бонусами" />
         </form>
         <br />
-        <form asp-controller="BonRequests" asp-action="Index">
+        <form method="get" asp-controller="BonRequests" asp-action="Index">
             <input type="submit" value="Запросы от смертных" />
         </form>
     }

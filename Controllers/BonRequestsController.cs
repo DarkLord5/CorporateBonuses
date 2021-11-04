@@ -22,11 +22,10 @@ namespace CorporateBonuses.Controllers
             _userManager = userManager;
         }
 
-        // GET: BonRequests
-        public async Task<IActionResult> Index()
+        private async Task<List<RequestsViewModel>> SearchingAsync(string param)
         {
             var requests = from br in _context.BonRequests select br;
-            var req = requests.Where(r => r.Status == "Pending").ToList();
+            var req = requests.Where(r => r.Status == param).ToList();
             List<RequestsViewModel> model = new();
             foreach (BonRequest request in req)
             {
@@ -38,6 +37,33 @@ namespace CorporateBonuses.Controllers
                 };
                 model.Add(data);
             }
+            return model;
+        }
+
+
+        // GET: BonRequests
+        public async Task<IActionResult> IndexAsync()
+        {
+            var model = await SearchingAsync("Pending");
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(int Id, string command)
+        {
+            BonRequest request = await _context.BonRequests.FindAsync(Id);
+            request.Status = command;
+            _context.Update(request);
+            await _context.SaveChangesAsync();
+
+            var requests = from br in _context.BonRequests select br;
+            var req = requests.Where(br => (br.BonusId == request.BonusId) && (br.UserId == request.UserId) && (br.Status == "Pending")).ToList();
+            foreach(var r in req){
+                r.Status = "Rejected";
+                _context.Update(r);
+            }
+            await _context.SaveChangesAsync();
+            var model = await SearchingAsync("Pending");
             return View(model);
         }
 

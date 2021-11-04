@@ -6,6 +6,7 @@
 
 <h1>Index</h1>
 
+<br />
 <table class="table">
     <thead>
         <tr>
@@ -46,7 +47,22 @@
                 @Html.DisplayFor(modelItem => item.Requests.ApproveDate)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Requests.Id">Edit</a>
+                <form asp-controller="BonRequests" asp-action="Index" method="post">
+                    <p>
+                        <input type="hidden" name="Id" value="@item.Requests.Id" />
+                        <input type="hidden" name="command" value="Approved" />
+                        <input type="submit" value="Approve" />
+                    </p>
+                </form>
+            </td>
+            <td>
+                <form asp-controller="BonRequests" asp-action="Index" method="post">
+                    <p>
+                        <input type="hidden" name="Id" value="@item.Requests.Id" />
+                        <input type="hidden" name="command" value="Rejected" />
+                        <input type="submit" value="Reject" />
+                    </p>
+                </form>
             </td>
         </tr>
 }
