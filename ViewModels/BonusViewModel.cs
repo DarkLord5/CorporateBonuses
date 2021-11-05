@@ -8,6 +8,10 @@ namespace CorporateBonuses.ViewModels
 {
     public class BonusViewModel
     {
+        public BonusViewModel(Bonus b)
+        {
+            Bonus = b;
+        }
         public Bonus Bonus { get; set; }
     }
 }

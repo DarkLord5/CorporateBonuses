@@ -1,4 +1,4 @@
-﻿@model CorporateBonuses.Models.Bonus
+﻿@model CorporateBonuses.ViewModels.BonusViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,33 +13,33 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Rang" class="control-label"></label>
-                <input asp-for="Rang" class="form-control" />
-                <span asp-validation-for="Rang" class="text-danger"></span>
+                <label asp-for="Bonus.Rang" class="control-label"></label>
+                <input asp-for="Bonus.Rang" class="form-control" />
+                <span asp-validation-for="Bonus.Rang" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Bonus.Name" class="control-label"></label>
+                <input asp-for="Bonus.Name" class="form-control" />
+                <span asp-validation-for="Bonus.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="Bonus.Description" class="control-label"></label>
+                <input asp-for="Bonus.Description" class="form-control" />
+                <span asp-validation-for="Bonus.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DaysToReset" class="control-label"></label>
-                <input asp-for="DaysToReset" class="form-control" />
-                <span asp-validation-for="DaysToReset" class="text-danger"></span>
+                <label asp-for="Bonus.DaysToReset" class="control-label"></label>
+                <input asp-for="Bonus.DaysToReset" class="form-control" />
+                <span asp-validation-for="Bonus.DaysToReset" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>(cent)
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
+                <label asp-for="Bonus.Price" class="control-label"></label>(cent)
+                <input asp-for="Bonus.Price" class="form-control" />
+                <span asp-validation-for="Bonus.Price" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Enabled" /> @Html.DisplayNameFor(model => model.Enabled)
+                    <input class="form-check-input" asp-for="Bonus.Enabled" /> @Html.DisplayNameFor(model => model.Bonus.Enabled)
                 </label>
             </div>
             <div class="form-group">

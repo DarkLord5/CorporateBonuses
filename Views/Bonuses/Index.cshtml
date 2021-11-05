@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CorporateBonuses.Models.Bonus>
+﻿@model List<CorporateBonuses.ViewModels.BonusViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,20 +13,20 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Rang)
+                @Html.DisplayNameFor(model => model[0].Bonus.Rang)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model[0].Bonus.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DaysToReset)
+                @Html.DisplayNameFor(model => model[0].Bonus.DaysToReset)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                @Html.DisplayNameFor(model => model[0].Bonus.Price)
                 (cent)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Enabled)
+                @Html.DisplayNameFor(model => model[0].Bonus.Enabled)
             </th>
             <th></th>
         </tr>
@@ -35,24 +35,24 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Rang)
+                @Html.DisplayFor(modelItem => item.Bonus.Rang)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.Bonus.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DaysToReset)
+                @Html.DisplayFor(modelItem => item.Bonus.DaysToReset)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Price)
+                @Html.DisplayFor(modelItem => item.Bonus.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Enabled)
+                @Html.DisplayFor(modelItem => item.Bonus.Enabled)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Bonus.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Bonus.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Bonus.Id">Delete</a>
             </td>
         </tr>
 }

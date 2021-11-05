@@ -19,9 +19,10 @@ namespace CustomIdentityApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var users = _userManager.Users.ToList();
+            var CurrentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+            var AllUsers = _userManager.Users;
+            var users = AllUsers.Where(u => u.Id != CurrentUser.Id).ToList();
             List<UserViewModel> model = new();
-            
             foreach(User user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);

@@ -59,8 +59,22 @@ namespace CorporateBonuses.Controllers
             List<Bonus> bonuses = new();
             foreach (BonRequest request in req)
             {
-                users.Add(await _userManager.FindByIdAsync(request.UserId));
-                bonuses.Add(await _context.Bonuses.FindAsync(request.BonusId));
+                User user = await _userManager.FindByIdAsync(request.UserId);
+                if (user == null)
+                {
+                    user = new User
+                    {
+                        FirstName = "Former",
+                        Surname = "Employee"
+                    };
+                }
+                users.Add(user);
+                Bonus bonus = await _context.Bonuses.FindAsync(request.BonusId);
+                if (bonus == null)
+                {
+                    bonus = new Bonus { Name="Deleted Bonus" };
+                }
+                bonuses.Add(bonus);
             }
             List<string> states = new()
             {
@@ -86,21 +100,19 @@ namespace CorporateBonuses.Controllers
             if(expectation%30==0)
             {
                 int month = expectation / 30;
-                newDate.AddMonths(month);
+                newDate = newDate.AddMonths(month);
                 
                 return new DateTime(newDate.Year, newDate.Month, 1);
             }
             else if(expectation == 365)
             {
-                newDate.AddYears(1);
-                return newDate;
+                newDate = newDate.AddYears(1);
+                return new DateTime(newDate.Year, 1, 1);
             }
             else
             {
-                newDate.AddDays(expectation);
-                return newDate;
+                return newDate.AddDays(expectation);
             }
-            
         }
 
 
@@ -126,7 +138,7 @@ namespace CorporateBonuses.Controllers
             PersonalBonus persBon = new()
             {
                 UserId = request.UserId,
-                BonusId = Id,
+                BonusId = request.BonusId,
                 EnableDate = EnableDate(bonus.DaysToReset)
             };
             _context.Add(persBon);

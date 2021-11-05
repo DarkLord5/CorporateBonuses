@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CorporateBonuses.Models;
 using Microsoft.AspNetCore.Identity;
+using CorporateBonuses.ViewModels;
 
 namespace CorporateBonuses.Controllers
 {
@@ -21,29 +22,30 @@ namespace CorporateBonuses.Controllers
             _userManager = userManager;
         }
 
-        
+        private List<BonusViewModel> ToViewModel(List<Bonus> bonuses)
+        {
+            List<BonusViewModel> bonusViews = new();
+            foreach (var bonus in bonuses)
+            {
+                BonusViewModel bView = new BonusViewModel(bonus);
+                bonusViews.Add(bView);
+            }
+            return bonusViews;
+        }
 
-        private IQueryable Filtration(User user)
+        private List<BonusViewModel> Filtration(User user)
         {
             var persbonuses = from pb in _context.PersonalBonuses select pb;
-            var persbon = persbonuses.Where(pb => pb.UserId == user.Id).ToList();
-
-            var bonuses = from b in _context.Bonuses select b;
-            bonuses = bonuses.Where(b => b.Enabled);
-            bonuses = bonuses.Where(b => b.Rang <= user.Rang);
-            //foreach(PersonalBonus pb in persbon)
-            //{
-            //    Bonus bonus = await _context.Bonuses.FindAsync(pb.BonusId);
-            //    bonuses = bonuses.Where(b => (b.Id == pb.BonusId)&&(DateTime.Today>=pb.EnableDate));
-            //}
+            var persbon = persbonuses.Where(pb => pb.UserId == user.Id).Where(pb => pb.EnableDate > DateTime.Today);
+            var bonuses = _context.Bonuses.Where(b => !persbon.Select(p => p.BonusId).Contains(b.Id)).Where(b => b.Enabled).Where(b => b.Rang <= user.Rang).ToList();
             
-            return (bonuses);
+            return ToViewModel(bonuses);
         }
         
 
         public async Task<IActionResult> UserList()
         {
-            string u = User.Identity.Name; //
+            string u = User.Identity.Name;
             User user = await _userManager.FindByNameAsync(u);
             return View(Filtration(user));
         }
@@ -70,7 +72,8 @@ namespace CorporateBonuses.Controllers
         // GET: Bonuses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Bonuses.ToListAsync());
+            var bonuses = await _context.Bonuses.ToListAsync();
+            return View(ToViewModel(bonuses));
         }
 
         // GET: Bonuses/Details/5
@@ -87,8 +90,8 @@ namespace CorporateBonuses.Controllers
             {
                 return NotFound();
             }
-
-            return View(bonus);
+            BonusViewModel bonusView = new(bonus);
+            return View(bonusView);
         }
 
         // GET: Bonuses/Create
@@ -102,15 +105,15 @@ namespace CorporateBonuses.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Bonus bonus)
+        public async Task<IActionResult> Create(BonusViewModel bonusView)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(bonus);
+                _context.Add(bonusView.Bonus);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(bonus);
+            return View(bonusView);
         }
 
         // GET: Bonuses/Edit/5
@@ -126,7 +129,8 @@ namespace CorporateBonuses.Controllers
             {
                 return NotFound();
             }
-            return View(bonus);
+            BonusViewModel bonusView = new(bonus);
+            return View(bonusView);
         }
 
         // POST: Bonuses/Edit/5
@@ -134,9 +138,9 @@ namespace CorporateBonuses.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Rang,Name,Description,DaysToReset,Price,Enabled")] Bonus bonus)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Rang,Name,Description,DaysToReset,Price,Enabled")] BonusViewModel bonusView)
         {
-            if (id != bonus.Id)
+            if (id != bonusView.Bonus.Id)
             {
                 return NotFound();
             }
@@ -145,12 +149,12 @@ namespace CorporateBonuses.Controllers
             {
                 try
                 {
-                    _context.Update(bonus);
+                    _context.Update(bonusView.Bonus);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BonusExists(bonus.Id))
+                    if (!BonusExists(bonusView.Bonus.Id))
                     {
                         return NotFound();
                     }
@@ -160,17 +164,17 @@ namespace CorporateBonuses.Controllers
                     }
                 }
                 var requests = from b in _context.BonRequests select b;
-                requests = requests.Where(r => r.BonusId == bonus.Id);
+                requests = requests.Where(r => r.BonusId == bonusView.Bonus.Id);
                 var req = requests.Where(r => r.Status == "Pending").ToList();
                 foreach(var r in req)
                 {
-                    r.Price = bonus.Price;
+                    r.Price = bonusView.Bonus.Price;
                     _context.Update(r);
                 }
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(bonus);
+            return View(bonusView.Bonus);
         }
 
         // GET: Bonuses/Delete/5
@@ -187,8 +191,8 @@ namespace CorporateBonuses.Controllers
             {
                 return NotFound();
             }
-
-            return View(bonus);
+            BonusViewModel bonusView = new(bonus);
+            return View(bonusView);
         }
 
         // POST: Bonuses/Delete/5

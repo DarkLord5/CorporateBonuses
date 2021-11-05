@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CorporateBonuses.Models.Bonus>
+﻿@model List<CorporateBonuses.ViewModels.BonusViewModel>
 
 @{
     ViewData["Title"] = "UserList";
@@ -9,10 +9,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Название
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                Описание
             </th>
             <th></th>
         </tr>
@@ -21,13 +21,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.Bonus.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.Bonus.Description)
             </td>
             <td>
-                <form method="post" asp-action="UserList" asp-route-id="@item.Id">
+                <form method="post" asp-action="UserList" asp-route-id="@item.Bonus.Id">
                     <input type="submit" value="Отправить запрос" />
                 </form>
             </td>

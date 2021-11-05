@@ -1,4 +1,4 @@
-﻿@model CorporateBonuses.Models.Bonus
+﻿@model CorporateBonuses.ViewModels.BonusViewModel
 
 @{
     ViewData["Title"] = "Delete";
@@ -12,45 +12,45 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rang)
+            @Html.DisplayNameFor(model => model.Bonus.Rang)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rang)
+            @Html.DisplayFor(model => model.Bonus.Rang)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Bonus.Name)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Bonus.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.Bonus.Description)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
+            @Html.DisplayFor(model => model.Bonus.Description)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DaysToReset)
+            @Html.DisplayNameFor(model => model.Bonus.DaysToReset)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DaysToReset)
+            @Html.DisplayFor(model => model.Bonus.DaysToReset)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
+            @Html.DisplayNameFor(model => model.Bonus.Price)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
+            @Html.DisplayFor(model => model.Bonus.Price)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Enabled)
+            @Html.DisplayNameFor(model => model.Bonus.Enabled)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Enabled)
+            @Html.DisplayFor(model => model.Bonus.Enabled)
         </dd>
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Bonus.Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>
