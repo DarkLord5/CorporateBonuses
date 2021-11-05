@@ -9,6 +9,7 @@ using CorporateBonuses.Models;
 using Microsoft.AspNetCore.Identity;
 using CorporateBonuses.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using CorporateBonuses.Services;
 
 namespace CorporateBonuses.Controllers
 {
@@ -16,6 +17,7 @@ namespace CorporateBonuses.Controllers
     {
         private readonly ApplicationContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly DataCounterService _service = new();
 
         public BonusesController(ApplicationContext context, UserManager<User> userManager )
         {
@@ -28,7 +30,16 @@ namespace CorporateBonuses.Controllers
             List<BonusViewModel> bonusViews = new();
             foreach (var bonus in bonuses)
             {
-                BonusViewModel bView = new BonusViewModel(bonus);
+                BonusViewModel bView = new()
+                {
+                    Id = bonus.Id,
+                    Name = bonus.Name,
+                    Price = bonus.Price,
+                    Enabled = bonus.Enabled,
+                    DaysToReset = bonus.DaysToReset,
+                    Description = bonus.Description,
+                    Rang = bonus.Rang
+                };
                 bonusViews.Add(bView);
             }
             return bonusViews;
@@ -67,6 +78,13 @@ namespace CorporateBonuses.Controllers
             else
             {
                 req.Status = "Approved";
+                PersonalBonus persBon = new()
+                {
+                    UserId = req.UserId,
+                    BonusId = req.BonusId,
+                    EnableDate = _service.EnableDate(bon.DaysToReset)
+                };
+                _context.Add(persBon);
             }
             _context.Add(req);
             await _context.SaveChangesAsync();
@@ -95,7 +113,16 @@ namespace CorporateBonuses.Controllers
             {
                 return NotFound();
             }
-            BonusViewModel bonusView = new(bonus);
+            BonusViewModel bonusView = new()
+            {
+                Id = bonus.Id,
+                Name = bonus.Name,
+                Price = bonus.Price,
+                Enabled = bonus.Enabled,
+                DaysToReset = bonus.DaysToReset,
+                Description = bonus.Description,
+                Rang = bonus.Rang
+            };
             return View(bonusView);
         }
 
@@ -112,15 +139,24 @@ namespace CorporateBonuses.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Create(BonusViewModel bonusView)
+        public async Task<IActionResult> Create(BonusViewModel bonus)
         {
+            Bonus newBonus = new()
+            {
+                Name = bonus.Name,
+                Price = bonus.Price,
+                Enabled = bonus.Enabled,
+                DaysToReset = bonus.DaysToReset,
+                Description = bonus.Description,
+                Rang = bonus.Rang
+            };
             if (ModelState.IsValid)
             {
-                _context.Add(bonusView.Bonus);
+                _context.Add(newBonus);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(bonusView);
+            return View(bonus);
         }
 
         // GET: Bonuses/Edit/5
@@ -137,7 +173,16 @@ namespace CorporateBonuses.Controllers
             {
                 return NotFound();
             }
-            BonusViewModel bonusView = new(bonus);
+            BonusViewModel bonusView = new()
+            {
+                Id = bonus.Id,
+                Name = bonus.Name,
+                Price = bonus.Price,
+                Enabled = bonus.Enabled,
+                DaysToReset = bonus.DaysToReset,
+                Description = bonus.Description,
+                Rang = bonus.Rang
+            };
             return View(bonusView);
         }
 
@@ -147,9 +192,9 @@ namespace CorporateBonuses.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Rang,Name,Description,DaysToReset,Price,Enabled")] BonusViewModel bonusView)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Rang,Name,Description,DaysToReset,Price,Enabled")] Bonus bonusView)
         {
-            if (id != bonusView.Bonus.Id)
+            if (id != bonusView.Id)
             {
                 return NotFound();
             }
@@ -158,12 +203,12 @@ namespace CorporateBonuses.Controllers
             {
                 try
                 {
-                    _context.Update(bonusView.Bonus);
+                    _context.Update(bonusView);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BonusExists(bonusView.Bonus.Id))
+                    if (!BonusExists(bonusView.Id))
                     {
                         return NotFound();
                     }
@@ -173,17 +218,17 @@ namespace CorporateBonuses.Controllers
                     }
                 }
                 var requests = from b in _context.BonRequests select b;
-                requests = requests.Where(r => r.BonusId == bonusView.Bonus.Id);
+                requests = requests.Where(r => r.BonusId == bonusView.Id);
                 var req = requests.Where(r => r.Status == "Pending").ToList();
                 foreach(var r in req)
                 {
-                    r.Price = bonusView.Bonus.Price;
+                    r.Price = bonusView.Price;
                     _context.Update(r);
                 }
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(bonusView.Bonus);
+            return View(bonusView);
         }
 
         // GET: Bonuses/Delete/5
@@ -201,7 +246,16 @@ namespace CorporateBonuses.Controllers
             {
                 return NotFound();
             }
-            BonusViewModel bonusView = new(bonus);
+            BonusViewModel bonusView = new()
+            {
+                Id = bonus.Id,
+                Name = bonus.Name,
+                Price = bonus.Price,
+                Enabled = bonus.Enabled,
+                DaysToReset = bonus.DaysToReset,
+                Description = bonus.Description,
+                Rang = bonus.Rang
+            };
             return View(bonusView);
         }
 

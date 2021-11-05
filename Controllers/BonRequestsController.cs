@@ -9,6 +9,7 @@ using CorporateBonuses.Models;
 using CorporateBonuses.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using CorporateBonuses.Services;
 
 namespace CorporateBonuses.Controllers
 {
@@ -16,6 +17,7 @@ namespace CorporateBonuses.Controllers
     {
         private readonly ApplicationContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly DataCounterService _service = new();
 
         public BonRequestsController(ApplicationContext context, UserManager<User> userManager)
         {
@@ -25,7 +27,8 @@ namespace CorporateBonuses.Controllers
 
 
         //вспомогательные методы
-        private double[] Counter(IQueryable<BonRequest> requests)
+
+        public double[] Counter(IQueryable<BonRequest> requests)
         {
             double[] price = { 0, 0, 0 };
             var req = requests.Where(r => r.Status == "Approved").ToList();
@@ -49,6 +52,8 @@ namespace CorporateBonuses.Controllers
             }
             return price;
         }
+
+
         private async Task<RequestsViewModel> Filter(string param, IQueryable<BonRequest> requests)
         {
             List<BonRequest> req = requests.ToList();
@@ -95,26 +100,7 @@ namespace CorporateBonuses.Controllers
         }
 
 
-        private DateTime EnableDate(int expectation)
-        {
-            DateTime newDate = DateTime.Today;
-            if(expectation%30==0)
-            {
-                int month = expectation / 30;
-                newDate = newDate.AddMonths(month);
-                
-                return new DateTime(newDate.Year, newDate.Month, 1);
-            }
-            else if(expectation == 365)
-            {
-                newDate = newDate.AddYears(1);
-                return new DateTime(newDate.Year, 1, 1);
-            }
-            else
-            {
-                return newDate.AddDays(expectation);
-            }
-        }
+        
 
 
         // Списки для админа
@@ -142,7 +128,7 @@ namespace CorporateBonuses.Controllers
             {
                 UserId = request.UserId,
                 BonusId = request.BonusId,
-                EnableDate = EnableDate(bonus.DaysToReset)
+                EnableDate = _service.EnableDate(bonus.DaysToReset)
             };
             _context.Add(persBon);
             }

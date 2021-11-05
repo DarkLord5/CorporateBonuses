@@ -20,7 +20,7 @@ namespace CustomIdentityApp
             }
             if (await userManager.FindByNameAsync(adminEmail) == null)
             {
-                User admin = new User { Email = adminEmail, UserName = adminEmail, FirstName = "Master", Surname = "Slave", Rang = 5 };
+                User admin = new() { Email = adminEmail, UserName = adminEmail, FirstName = "Master", Surname = "Slave", Rang = 5 };
                 IdentityResult result = await userManager.CreateAsync(admin, password);
                 if (result.Succeeded)
                 {

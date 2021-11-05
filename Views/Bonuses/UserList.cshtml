@@ -21,13 +21,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Bonus.Name)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Bonus.Description)
+                @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                <form method="post" asp-action="UserList" asp-route-id="@item.Bonus.Id">
+                <form method="post" asp-action="UserList" asp-route-id="@item.Id">
                     <input type="submit" value="Отправить запрос" />
                 </form>
             </td>

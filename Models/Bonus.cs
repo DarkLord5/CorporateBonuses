@@ -12,18 +12,18 @@ namespace CorporateBonuses.Models
         [Key]
         public int Id { get; set;}
         [Required]
+        [Range(1, 5)]
         public int Rang { get; set; }
-        [Required]
 
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         [Required]
         [Range(0, 365)]
         public int DaysToReset { get; set; }
 
-        [Range(0, 100000)]
+        [Range(0, 10000000)]
         public int Price { get; set; }
-        //public byte[] Icon { get; set; }
         public bool Enabled { get; set; }
     }
 }

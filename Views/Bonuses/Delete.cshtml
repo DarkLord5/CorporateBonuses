@@ -8,49 +8,49 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Bonus</h4>
+    <h4>Deleting</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bonus.Rang)
+            @Html.DisplayNameFor(model => model.Rang)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bonus.Rang)
+            @Html.DisplayFor(model => model.Rang)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bonus.Name)
+            @Html.DisplayNameFor(model => model.Name)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bonus.Name)
+            @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bonus.Description)
+            @Html.DisplayNameFor(model => model.Description)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bonus.Description)
+            @Html.DisplayFor(model => model.Description)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bonus.DaysToReset)
+            @Html.DisplayNameFor(model => model.DaysToReset)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bonus.DaysToReset)
+            @Html.DisplayFor(model => model.DaysToReset)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bonus.Price)
+            @Html.DisplayNameFor(model => model.Price)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bonus.Price)
+            @Html.DisplayFor(model => model.Price)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Bonus.Enabled)
+            @Html.DisplayNameFor(model => model.Enabled)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Bonus.Enabled)
+            @Html.DisplayFor(model => model.Enabled)
         </dd>
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="Bonus.Id" />
+        <input type="hidden" asp-for="Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>

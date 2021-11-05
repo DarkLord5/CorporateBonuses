@@ -69,7 +69,6 @@ namespace CorporateBonuses
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //app.UseGoogleAuthentication();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
