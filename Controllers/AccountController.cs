@@ -85,6 +85,11 @@ namespace CorporateBonuses.Controllers
             return View(model);
         }
 
+        public IActionResult AccessDenied()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

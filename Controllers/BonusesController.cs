@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CorporateBonuses.Models;
 using Microsoft.AspNetCore.Identity;
 using CorporateBonuses.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CorporateBonuses.Controllers
 {
@@ -41,8 +42,8 @@ namespace CorporateBonuses.Controllers
             
             return ToViewModel(bonuses);
         }
-        
 
+        [Authorize(Roles = "user")]
         public async Task<IActionResult> UserList()
         {
             string u = User.Identity.Name;
@@ -50,6 +51,8 @@ namespace CorporateBonuses.Controllers
             return View(Filtration(user));
         }
 
+
+        [Authorize(Roles = "user")]
         [HttpPost]
         public async Task<IActionResult> UserList(int Id)
         {
@@ -70,6 +73,7 @@ namespace CorporateBonuses.Controllers
             return View(Filtration(user));
         }
         // GET: Bonuses
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var bonuses = await _context.Bonuses.ToListAsync();
@@ -77,6 +81,7 @@ namespace CorporateBonuses.Controllers
         }
 
         // GET: Bonuses/Details/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -95,6 +100,7 @@ namespace CorporateBonuses.Controllers
         }
 
         // GET: Bonuses/Create
+        [Authorize(Roles = "admin")]
         public IActionResult Create()
         {
             return View();
@@ -105,6 +111,7 @@ namespace CorporateBonuses.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create(BonusViewModel bonusView)
         {
             if (ModelState.IsValid)
@@ -117,6 +124,7 @@ namespace CorporateBonuses.Controllers
         }
 
         // GET: Bonuses/Edit/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -138,6 +146,7 @@ namespace CorporateBonuses.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Rang,Name,Description,DaysToReset,Price,Enabled")] BonusViewModel bonusView)
         {
             if (id != bonusView.Bonus.Id)
@@ -178,6 +187,7 @@ namespace CorporateBonuses.Controllers
         }
 
         // GET: Bonuses/Delete/5
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -198,6 +208,7 @@ namespace CorporateBonuses.Controllers
         // POST: Bonuses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var bonus = await _context.Bonuses.FindAsync(id);

@@ -28,6 +28,17 @@ namespace CorporateBonuses
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultScheme = "cookie";
+            //    options.DefaultChallengeScheme = "oidc";
+            //})
+            //    .AddCookie("cookie")
+            //    .AddOpenIdConnect("oidc", options =>
+            //    {
+
+
+            //    })
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -58,6 +69,7 @@ namespace CorporateBonuses
             app.UseAuthentication();
             app.UseAuthorization();
 
+            //app.UseGoogleAuthentication();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

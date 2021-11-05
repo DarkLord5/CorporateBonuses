@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CorporateBonuses.Models;
 using CorporateBonuses.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CorporateBonuses.Controllers
 {
@@ -118,6 +119,7 @@ namespace CorporateBonuses.Controllers
 
         // Списки для админа
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var requests = from br in _context.BonRequests select br;
@@ -126,6 +128,7 @@ namespace CorporateBonuses.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index(int Id, string command)
         {
             BonRequest request = await _context.BonRequests.FindAsync(Id);
@@ -158,6 +161,7 @@ namespace CorporateBonuses.Controllers
 
         //Статистика для админа
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Statistics(string State)
         {
             var requests = from br in _context.BonRequests select br;
@@ -165,6 +169,7 @@ namespace CorporateBonuses.Controllers
             return View(model);
         }
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Statistics(RequestsViewModel model)
         {
             var requests = from br in _context.BonRequests select br;
@@ -176,6 +181,7 @@ namespace CorporateBonuses.Controllers
 
         //Пользовательские методы
         [HttpGet]
+        [Authorize(Roles = "user")]
         public async Task<IActionResult> MyRequests(string State)
         {
             string u = User.Identity.Name;
@@ -187,6 +193,7 @@ namespace CorporateBonuses.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "user")]
         public async Task<IActionResult> MyRequests(RequestsViewModel model)
         {
             string u = User.Identity.Name;

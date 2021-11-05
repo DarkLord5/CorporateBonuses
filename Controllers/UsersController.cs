@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using CorporateBonuses.Models;
 using CorporateBonuses.ViewModels;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CustomIdentityApp.Controllers
 {
@@ -16,7 +17,7 @@ namespace CustomIdentityApp.Controllers
         {
             _userManager = userManager;
         }
-
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
             var CurrentUser = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -40,7 +41,7 @@ namespace CustomIdentityApp.Controllers
             return View(model);
         }
 
-        
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(string id)
         {
             User user = await _userManager.FindByIdAsync(id);
@@ -62,6 +63,7 @@ namespace CustomIdentityApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Edit(UserViewModel model)
         {
             if (ModelState.IsValid)
