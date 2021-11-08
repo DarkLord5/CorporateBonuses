@@ -17,7 +17,6 @@ namespace CorporateBonuses.Controllers
     {
         private readonly ApplicationContext _context;
         private readonly UserManager<User> _userManager;
-        private readonly DataCounterService _service = new();
 
         public BonusesController(ApplicationContext context, UserManager<User> userManager )
         {
@@ -96,7 +95,7 @@ namespace CorporateBonuses.Controllers
                 {
                     UserId = req.UserId,
                     BonusId = req.BonusId,
-                    EnableDate = _service.EnableDate(bon.DaysToReset)
+                    EnableDate = DataCounterService.EnableDate(bon.DaysToReset)
                 };
 
                 _context.Add(persBon);

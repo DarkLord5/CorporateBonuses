@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CorporateBonuses.Services
 {
-    public class DataCounterService
+    public static class DataCounterService
     {
-        public DateTime EnableDate(int expectation)
+        public static DateTime EnableDate(int expectation)
         {
             DateTime newDate = DateTime.Today;
             if (expectation == 0)
