@@ -7,8 +7,13 @@
 <h1>Список запросов</h1>
 
 <br />
+<div>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-dark">Вернуться на главную</a>
+</div>
+<br />
 <form method="get" asp-controller="BonRequests" asp-action="Statistics">
-    <input type="submit" value="Просмотр статистики" />
+
+    <input type="submit" class="btn btn-warning" role="button" value="Просмотр статистики" />
 </form>
 <br />
 <div class="table-responsive">

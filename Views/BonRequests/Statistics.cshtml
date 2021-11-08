@@ -4,27 +4,29 @@
     ViewData["Title"] = "Statistics";
 }
 
-<h1>Statistics</h1>
+<h1>Статистика</h1>
 <br />
-<form asp-controller="BonRequests" asp-action="Statistics" method="post">
-    <p class="text-light">
-        C <input asp-for="Start" type="date" value=""/> по <input type="date" asp-for="End" value="" />
-        <input type="submit" value="Статистика за промежуток времени" />
-    </p>
-</form>
-<h3>Вы потратили @Model.Price[0] $, если одобрите все запросы, то затратите дополнительно @Model.Price[1] $, также вы сэкономили @Model.Price[2] $ на отказах</h3>
+<div class="">
+    <form asp-controller="BonRequests" asp-action="Statistics" method="post">
+        <p>
+            C <input asp-for="Start" type="date" value="" /> по <input type="date" asp-for="End" value="" />
+            <input type="submit" class="btn btn-dark" role="button" value="Статистика за промежуток времени" />
+        </p>
+    </form>
+</div>
+<h3 class="bg-light">Вы потратили @Model.Price[0] $, если одобрите все запросы, то затратите дополнительно @Model.Price[1] $, также вы сэкономили @Model.Price[2] $ на отказах</h3>
 <br />
 <form asp-controller="BonRequests" asp-action="Statistics" method="get">
     <p>
         <select asp-for="State" asp-items="Model.States">
             <option value="">All</option>
         </select>
-        <input type="submit" value="Find by status" />
+        <input type="submit" class="btn btn-dark" role="button" value="Найти по статусу" />
     </p>
 </form>
 <br />
 <form method="get" asp-controller="BonRequests" asp-action="Index">
-    <input type="submit" value="Вернуться к текущим запросам" />
+    <input type="submit" class="btn btn-dark" role="button" value="Вернуться к текущим запросам" />
 </form>
 <br />
 <table class="table">
