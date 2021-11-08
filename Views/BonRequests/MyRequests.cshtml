@@ -7,9 +7,9 @@
 <h1>Мои запросы</h1>
 <br />
 <form asp-controller="BonRequests" asp-action="MyRequests" method="post">
-    <p>
+    <p class="text-light">
         C <input asp-for="Start" type="date" value="" /> по <input type="date" asp-for="End" value="" />
-        <input type="submit" value="Статистика за промежуток времени" />
+        <input type="submit" class="btn btn-dark  btn-md" value="Статистика за промежуток времени" />
     </p>
 </form>
 <br />
@@ -18,40 +18,42 @@
         <select asp-for="State" asp-items="Model.States">
             <option value="">All</option>
         </select>
-        <input type="submit" value="Find by status" />
+        <input type="submit" class="btn btn-dark  btn-md" value="Find by status" />
     </p>
 </form>
 <br />
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Bonus
-            </th>
-            <th>
-                Date of Request
-            </th>
-            <th>
-                Status
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (int i = 0; i < Model.Requests.Count; i++)
-        {
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => Model.Bonuses[i].Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => Model.Requests[i].ApproveDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => Model.Requests[i].Status)
-                </td>
-                <td></td>
+                <th>
+                    Bonus
+                </th>
+                <th>
+                    Date of Request
+                </th>
+                <th>
+                    Status
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Requests.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Bonuses[i].Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Requests[i].ApproveDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Requests[i].Status)
+                    </td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

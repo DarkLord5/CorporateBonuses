@@ -13,9 +13,12 @@ namespace CorporateBonuses.ViewModels
         [Required]
         [Range(1, 5)]
         public int Rang { get; set; }
+        public int UserRang { get; set; }
 
         [Required]
+        [StringLength(15, MinimumLength = 2, ErrorMessage = "Длина свойства {0} должна быть от {2} до {1} символов")]
         public string Name { get; set; }
+        [StringLength(30, MinimumLength = 5, ErrorMessage = "Длина свойства {0} должна быть от {2} до {1} символов")]
         public string Description { get; set; }
         [Required]
         [Range(0, 365)]
@@ -24,5 +27,7 @@ namespace CorporateBonuses.ViewModels
         [Range(0, 10000000)]
         public int Price { get; set; }
         public bool Enabled { get; set; }
+        public string EnableString { get; set; }
+        public string Answer { get; set; }
     }
 }

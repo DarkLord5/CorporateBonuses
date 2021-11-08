@@ -4,74 +4,74 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Список запросов</h1>
 
 <br />
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Id
-            </th>
-            <th>
-                Bonus
-            </th>
-            <th>
-                Employee
-            </th>
-            <th>
-                Price(cent)
-            </th>
-            <th>
-                Date of Request
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (int i = 0; i < Model.Requests.Count; i++)
-        {
+<form method="get" asp-controller="BonRequests" asp-action="Statistics">
+    <input type="submit" value="Просмотр статистики" />
+</form>
+<br />
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => Model.Requests[i].Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => Model.Bonuses[i].Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => Model.Users[i].FirstName) @Html.DisplayFor(modelItem => Model.Users[i].Surname)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => Model.Requests[i].Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => Model.Requests[i].ApproveDate)
-                </td>
-                <td>
-                    <form asp-controller="BonRequests" asp-action="Index" method="post">
-                        <p>
-                            <input type="hidden" name="Id" value="@Model.Requests[i].Id" />
-                            <input type="hidden" name="command" value="Approved" />
-                            <input type="submit" value="Approve" />
-                        </p>
-                    </form>
-                </td>
-                <td>
-                    <form asp-controller="BonRequests" asp-action="Index" method="post">
-                        <p>
-                            <input type="hidden" name="Id" value="@Model.Requests[i].Id" />
-                            <input type="hidden" name="command" value="Rejected" />
-                            <input type="submit" value="Reject" />
-                        </p>
-                    </form>
-                </td>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Bonus
+                </th>
+                <th>
+                    Employee
+                </th>
+                <th>
+                    Price(cent)
+                </th>
+                <th>
+                    Date of Request
+                </th>
+                <th></th>
             </tr>
-        }
-
-        <form method="get" asp-controller="BonRequests" asp-action="Statistics">
-            <input type="submit" value="Просмотр статистики" />
-        </form>
-
-
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Requests.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Requests[i].Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Bonuses[i].Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Users[i].FirstName) @Html.DisplayFor(modelItem => Model.Users[i].Surname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Requests[i].Price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Requests[i].ApproveDate)
+                    </td>
+                    <td>
+                        <form asp-controller="BonRequests" asp-action="Index" method="post">
+                            <p>
+                                <input type="hidden" name="Id" value="@Model.Requests[i].Id" />
+                                <input type="hidden" name="command" value="Approved" />
+                                <input type="submit" class="btn btn-success" value="Approve" />
+                            </p>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-controller="BonRequests" asp-action="Index" method="post">
+                            <p>
+                                <input type="hidden" name="Id" value="@Model.Requests[i].Id" />
+                                <input type="hidden" name="command" value="Rejected" />
+                                <input type="submit" class="btn btn-danger" value="Reject" />
+                            </p>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

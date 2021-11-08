@@ -122,15 +122,31 @@ namespace CorporateBonuses.Controllers
             request.ApproveDate = DateTime.Today;
             _context.Update(request);
             await _context.SaveChangesAsync();
-            if (command == "Approved") { 
             Bonus bonus = await _context.Bonuses.FindAsync(request.BonusId);
-            PersonalBonus persBon = new()
+            var persBonuses = _context.PersonalBonuses.Where(pb => request.BonusId == pb.BonusId).Where(pb => request.UserId == pb.UserId).Where(pb => pb.EnableDate > DateTime.Today).ToList();
+            if (command == "Approved") {
+                if (persBonuses.Count > 0) { 
+                var persBon = persBonuses[0];
+                persBon.EnableDate = _service.EnableDate(bonus.DaysToReset);
+                _context.Update(persBon);
+                }
+                else
+                {
+                    PersonalBonus personalBonus = new()
+                    {
+                        BonusId = request.BonusId,
+                        UserId = request.UserId,
+                        EnableDate = _service.EnableDate(bonus.DaysToReset)
+                    };
+                    _context.Add(personalBonus);
+                }
+            }
+            else if((command == "Rejected")&&(persBonuses.Count!=0))
             {
-                UserId = request.UserId,
-                BonusId = request.BonusId,
-                EnableDate = _service.EnableDate(bonus.DaysToReset)
-            };
-            _context.Add(persBon);
+                foreach(var persBon in persBonuses) { 
+                persBon.EnableDate = DateTime.Today;
+                _context.Update(persBon);
+                }
             }
             var requests = from br in _context.BonRequests select br;
             var req = requests.Where(br => (br.BonusId == request.BonusId) && (br.UserId == request.UserId) && (br.Status == "Pending")).ToList();

@@ -25,11 +25,23 @@ namespace CorporateBonuses.Controllers
             _userManager = userManager;
         }
 
-        private List<BonusViewModel> ToViewModel(List<Bonus> bonuses)
+        //Возвращаем список с фильтрованными бонусами
+        private List<BonusViewModel> Filtration(User user, string response = "")
         {
+            
+            var bonuses = _context.Bonuses.Where(b=>b.Enabled).OrderBy(b=>b.Rang).ToList();
             List<BonusViewModel> bonusViews = new();
             foreach (var bonus in bonuses)
             {
+                var persbon = _context.PersonalBonuses.Where(pb => pb.UserId == user.Id).Where(pb => bonus.Id == pb.BonusId).Where(pb => pb.EnableDate > DateTime.Today).ToList();
+                string answer="Доступен";
+                if (user.Rang<bonus.Rang)
+                {
+                    answer = $"Необходим {bonus.Rang} ранг";
+                }else if (persbon.Count!=0)
+                {
+                    answer = $"Бонус будет доступен {persbon[0].EnableDate}";
+                }
                 BonusViewModel bView = new()
                 {
                     Id = bonus.Id,
@@ -38,20 +50,15 @@ namespace CorporateBonuses.Controllers
                     Enabled = bonus.Enabled,
                     DaysToReset = bonus.DaysToReset,
                     Description = bonus.Description,
-                    Rang = bonus.Rang
+                    Rang = bonus.Rang,
+                    UserRang = user.Rang,
+                    EnableString = answer,
+                    Answer = response
                 };
                 bonusViews.Add(bView);
             }
-            return bonusViews;
-        }
 
-        private List<BonusViewModel> Filtration(User user)
-        {
-            var persbonuses = from pb in _context.PersonalBonuses select pb;
-            var persbon = persbonuses.Where(pb => pb.UserId == user.Id).Where(pb => pb.EnableDate > DateTime.Today);
-            var bonuses = _context.Bonuses.Where(b => !persbon.Select(p => p.BonusId).Contains(b.Id)).Where(b => b.Enabled).Where(b => b.Rang <= user.Rang).ToList();
-            
-            return ToViewModel(bonuses);
+            return bonusViews;
         }
 
         [Authorize(Roles = "user")]
@@ -70,32 +77,58 @@ namespace CorporateBonuses.Controllers
             string u = User.Identity.Name;
             User user = await _userManager.FindByNameAsync(u);
             Bonus bon = await _context.Bonuses.FindAsync(Id);
-            BonRequest req = new() { UserId = user.Id, BonusId = Id,  ApproveDate = DateTime.Today, Price = bon.Price };
-            if (bon.Rang>1) {
-
-                req.Status = "Pending";
-            }
-            else
+            var persbon = _context.PersonalBonuses.Where(pb => pb.UserId == user.Id).Where(pb => bon.Id == pb.BonusId).Where(pb => pb.EnableDate > DateTime.Today).ToList();
+            if ((bon.Rang<=user.Rang)&&(persbon.Count==0))
             {
-                req.Status = "Approved";
+                BonRequest req = new() { UserId = user.Id, BonusId = Id, ApproveDate = DateTime.Today, Price = bon.Price };
+                if (bon.Rang > 1)
+                {
+                    req.Status = "Pending";
+                    EmailService emailService = new EmailService();
+                    await emailService.SendEmailAsync("noreykoartem@gmail.com", "Запрос от пользователя",$"{user.FirstName} {user.Surname} претендует на бонус {bon.Name}");
+                }
+                else
+                {
+                    req.Status = "Approved";
+                }
+
                 PersonalBonus persBon = new()
                 {
                     UserId = req.UserId,
                     BonusId = req.BonusId,
                     EnableDate = _service.EnableDate(bon.DaysToReset)
                 };
+
                 _context.Add(persBon);
+                _context.Add(req);
+                await _context.SaveChangesAsync();
+                return View(Filtration(user, $"Запрос на получение {bon.Name} был отправлен"));
             }
-            _context.Add(req);
-            await _context.SaveChangesAsync();
-            return View(Filtration(user));
+
+            return View(Filtration(user, $"Запрос не отправлен."));
         }
+
         // GET: Bonuses
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Index()
         {
-            var bonuses = await _context.Bonuses.ToListAsync();
-            return View(ToViewModel(bonuses));
+            var bonuses = await _context.Bonuses.OrderBy(b=>b.Rang).ToListAsync();
+            List<BonusViewModel> bonusViews = new();
+            foreach (var bonus in bonuses)
+            {
+                BonusViewModel bView = new()
+                {
+                    Id = bonus.Id,
+                    Name = bonus.Name,
+                    Price = bonus.Price,
+                    Enabled = bonus.Enabled,
+                    DaysToReset = bonus.DaysToReset,
+                    Description = bonus.Description,
+                    Rang = bonus.Rang
+                };
+                bonusViews.Add(bView);
+            }
+            return View(bonusViews);
         }
 
         // GET: Bonuses/Details/5
@@ -217,10 +250,17 @@ namespace CorporateBonuses.Controllers
                         throw;
                     }
                 }
-                var requests = from b in _context.BonRequests select b;
-                requests = requests.Where(r => r.BonusId == bonusView.Id);
-                var req = requests.Where(r => r.Status == "Pending").ToList();
-                foreach(var r in req)
+                var requests = _context.BonRequests.Where(r => r.BonusId == bonusView.Id).Where(r => r.Status == "Pending").ToList();
+                if (!bonusView.Enabled)
+                {
+                    foreach(var r in requests)
+                    {
+                        r.Status = "Rejected";
+                        _context.Update(r);
+                    }
+                }
+
+                foreach(var r in requests)
                 {
                     r.Price = bonusView.Price;
                     _context.Update(r);
