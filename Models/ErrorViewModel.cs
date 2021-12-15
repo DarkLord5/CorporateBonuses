@@ -1,5 +1,3 @@
-using System;
-
 namespace CorporateBonuses.Models
 {
     public class ErrorViewModel

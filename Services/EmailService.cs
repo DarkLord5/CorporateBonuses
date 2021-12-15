@@ -10,7 +10,7 @@ namespace CorporateBonuses.Services
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("Система запросов", "corpbonus@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress("Система запросов Corporate Bonuses", "corpbonus@gmail.com"));
             emailMessage.To.Add(new MailboxAddress("", "corporatebonuses@yandex.ru"));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Plain)
@@ -20,7 +20,7 @@ namespace CorporateBonuses.Services
 
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync("smtp.gmail.com", 465, true);//"smtp.yandex.ru", 25, true);
+                await client.ConnectAsync("smtp.gmail.com", 465, true);
                 await client.AuthenticateAsync("corpbonus@gmail.com", "123Cb456");
                 await client.SendAsync(emailMessage);
 
